@@ -569,6 +569,10 @@ void ThreadPool_Init(void)
             // Hopefully your system returns logical cpus here, as does MacOS X
             gThreadCount = (cl_int)sysconf(_SC_NPROCESSORS_CONF);
         }
+
+        if (gThreadCount > 4)
+           gThreadCount = 4;
+
 #else /* !_WIN32 */
         // Hopefully your system returns logical cpus here, as does MacOS X
         gThreadCount = (cl_int)sysconf(_SC_NPROCESSORS_CONF);
