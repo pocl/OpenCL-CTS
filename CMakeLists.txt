@@ -163,6 +163,7 @@ if(WIN32 AND ${CLConform_TARGET_ARCH} STREQUAL "x86")
 endif()
 
 list(APPEND CLConform_LIBRARIES ${OPENCL_LIBRARIES})
+
 if(ANDROID)
     list(APPEND CLConform_LIBRARIES m)
 endif()
@@ -177,12 +178,22 @@ if(LINK_PTHREAD)
     list(APPEND CLConform_LIBRARIES pthread)
 endif()
 
+if(ENABLE_ASAN)
+  set(CLConform_LIBRARIES "asan" ${CLConform_LIBRARIES})
+endif()
+
+if(ENABLE_TSAN)
+  set(CLConform_LIBRARIES "tsan" ${CLConform_LIBRARIES})
+endif()
+
 if(APPLE)
     find_library(corefoundation CoreFoundation)
     find_library(iokit IOKit)
     list(APPEND CLConform_LIBRARIES ${corefoundation})
     list(APPEND CLConform_LIBRARIES ${iokit})
 endif(APPLE)
+
+message(STATUS "CLConform_LIBRARIES: ${CLConform_LIBRARIES}")
 
 include_directories(SYSTEM ${CL_INCLUDE_DIR})
 include_directories(${CLConform_SOURCE_DIR}/test_common/harness
