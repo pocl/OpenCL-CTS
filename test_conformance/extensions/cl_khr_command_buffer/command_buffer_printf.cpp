@@ -288,15 +288,17 @@ struct CommandBufferPrintfTest : public BasicCommandBufferTest
         }
 
         // enqueue command buffer with kernel containing printf command
+        cl_event Ev = nullptr;
         error = clEnqueueCommandBufferKHR(0, nullptr, command_buffer, 0,
-                                          nullptr, &wait_event);
+                                          nullptr, &Ev);
+        wait_event.reset(Ev);
         test_error_release_stdout(error, "clEnqueueCommandBufferKHR failed");
 
         fflush(stdout);
 
         // Wait until kernel finishes its execution and (thus) the output
         // printed from the kernel is immediately printed
-        error = clWaitForEvents(1, &wait_event);
+        error = clWaitForEvents(1, &Ev);
         test_error(error, "clWaitForEvents failed");
 
         // output buffer contains pattern to be compared with printout

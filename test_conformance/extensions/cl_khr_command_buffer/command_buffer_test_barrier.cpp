@@ -66,21 +66,24 @@ struct BarrierWithWaitListKHR : public BasicCommandBufferTest
         error = clFinalizeCommandBufferKHR(out_of_order_command_buffer);
         test_error(error, "clFinalizeCommandBufferKHR failed");
 
+        cl_event Ev = nullptr;
         error = clEnqueueCommandBufferKHR(
-            0, nullptr, out_of_order_command_buffer, 0, nullptr, &event);
+            0, nullptr, out_of_order_command_buffer, 0, nullptr, &Ev);
+        event.reset(Ev);
         test_error(error, "clEnqueueCommandBufferKHR failed");
 
         std::vector<cl_int> output_data_1(num_elements);
         error = clEnqueueReadBuffer(out_of_order_queue, out_mem, CL_TRUE, 0,
                                     data_size(), output_data_1.data(), 1,
-                                    &event, nullptr);
+                                    &Ev, nullptr);
         test_error(error, "clEnqueueReadBuffer failed");
 
         for (size_t i = 0; i < num_elements; i++)
         {
             CHECK_VERIFICATION_ERROR(pattern, output_data_1[i], i);
         }
-
+        Ev = nullptr;
+        event.reset(Ev);
         /* Check second enqueue of command buffer */
 
         error =
@@ -94,13 +97,14 @@ struct BarrierWithWaitListKHR : public BasicCommandBufferTest
         test_error(error, "clEnqueueFillBufferKHR failed");
 
         error = clEnqueueCommandBufferKHR(
-            0, nullptr, out_of_order_command_buffer, 0, nullptr, &event);
+            0, nullptr, out_of_order_command_buffer, 0, nullptr, &Ev);
+        event.reset(Ev);
         test_error(error, "clEnqueueCommandBufferKHR failed");
 
         std::vector<cl_int> output_data_2(num_elements);
         error = clEnqueueReadBuffer(out_of_order_queue, out_mem, CL_TRUE, 0,
                                     data_size(), output_data_2.data(), 1,
-                                    &event, nullptr);
+                                    &Ev, nullptr);
         test_error(error, "clEnqueueReadBuffer failed");
 
         for (size_t i = 0; i < num_elements; i++)
