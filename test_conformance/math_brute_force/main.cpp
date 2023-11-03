@@ -178,8 +178,8 @@ static int doTest(const char *name)
         {
             if (get_device_cl_version(gDevice) > Version(1, 2))
             {
-                gTestCount++;
-                vlog("%3d: ", gTestCount);
+                int TestCount = __atomic_add_fetch(&gTestCount, 1, __ATOMIC_ACQ_REL);
+                vlog("%3d: ", TestCount);
                 // Test with relaxed requirements here.
                 if (func_data->vtbl_ptr->TestFunc(func_data, gMTdata,
                                                   true /* relaxed mode */))
@@ -202,13 +202,13 @@ static int doTest(const char *name)
 
         if (gTestFloat)
         {
-            gTestCount++;
-            vlog("%3d: ", gTestCount);
+            int TestCount = __atomic_add_fetch(&gTestCount, 1, __ATOMIC_ACQ_REL);
+            vlog("%3d: ", TestCount);
             // Don't test with relaxed requirements.
             if (func_data->vtbl_ptr->TestFunc(func_data, gMTdata,
                                               false /* relaxed mode */))
             {
-                gFailCount++;
+                __atomic_add_fetch(&gFailCount, 1, __ATOMIC_ACQ_REL);
                 error++;
                 if (gStopOnError)
                 {
@@ -221,13 +221,13 @@ static int doTest(const char *name)
         if (gHasDouble && NULL != func_data->vtbl_ptr->DoubleTestFunc
             && NULL != func_data->dfunc.p)
         {
-            gTestCount++;
-            vlog("%3d: ", gTestCount);
+            int TestCount = __atomic_add_fetch(&gTestCount, 1, __ATOMIC_ACQ_REL);
+            vlog("%3d: ", TestCount);
             // Don't test with relaxed requirements.
             if (func_data->vtbl_ptr->DoubleTestFunc(func_data, gMTdata,
                                                     false /* relaxed mode*/))
             {
-                gFailCount++;
+                __atomic_add_fetch(&gFailCount, 1, __ATOMIC_ACQ_REL);
                 error++;
                 if (gStopOnError)
                 {
@@ -701,12 +701,7 @@ test_status InitCL(cl_device_id device)
         if (NULL == gOut2[i]) return TEST_FAIL;
     }
 
-    cl_mem_flags device_flags = CL_MEM_READ_ONLY;
-    // save a copy on the host device to make this go faster
-    if (CL_DEVICE_TYPE_CPU == device_type)
-        device_flags |= CL_MEM_USE_HOST_PTR;
-    else
-        device_flags |= CL_MEM_COPY_HOST_PTR;
+    cl_mem_flags device_flags = CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR;
 
     // setup input buffers
     gInBuffer =
