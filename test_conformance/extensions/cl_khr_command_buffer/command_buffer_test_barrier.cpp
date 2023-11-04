@@ -96,6 +96,9 @@ struct BarrierWithWaitListKHR : public BasicCommandBufferTest
                                 0, data_size(), 0, nullptr, nullptr);
         test_error(error, "clEnqueueFillBufferKHR failed");
 
+        error = clFinish(queue);
+        test_error(error, "clFinish");
+
         error = clEnqueueCommandBufferKHR(
             0, nullptr, out_of_order_command_buffer, 0, nullptr, &Ev);
         event.reset(Ev);
