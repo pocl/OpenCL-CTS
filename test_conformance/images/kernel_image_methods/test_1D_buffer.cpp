@@ -67,14 +67,12 @@ static int test_get_1Dimage_buffer_info_single(cl_context context,
     if (gDebugTrace)
         log_info(" - Creating 1D image %d ...\n", (int)imageInfo->width);
 
-    buffer = clCreateBuffer(
-        context, flags, imageInfo->width * get_pixel_size(imageInfo->format),
-        NULL, &error);
+    buffer = clCreateBuffer(context, flags, imageValues.getSize(),
+                            NULL, &error);
     if (error != CL_SUCCESS)
     {
         log_error("ERROR: Unable to create buffer for 1D image buffer of size "
-                  "%d (%s)",
-                  (int)imageInfo->rowPitch, IGetErrorString(error));
+                  "%zu (%s)", imageValues.getSize(), IGetErrorString(error));
     }
 
     image = create_image_1d(context, flags, imageInfo->format, imageInfo->width,
