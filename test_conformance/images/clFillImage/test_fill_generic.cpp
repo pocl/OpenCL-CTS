@@ -289,7 +289,8 @@ cl_mem create_image( cl_context context, cl_command_queue queue, BufferOwningPtr
     size_t origin[ 3 ] = { 0, 0, 0 };
     size_t region[ 3 ] = { imageInfo->width, height, depth };
 
-    void* mapped = (char*)clEnqueueMapImage(queue, img, CL_TRUE, CL_MAP_WRITE, origin, region, &mappedRow, &mappedSlice, 0, NULL, NULL, error);
+    void* mapped = (char*)clEnqueueMapImage(queue, img, CL_TRUE, CL_MAP_WRITE | CL_MAP_WRITE_INVALIDATE_REGION,
+                                            origin, region, &mappedRow, &mappedSlice, 0, NULL, NULL, error);
     if (*error != CL_SUCCESS || !mapped)
     {
         log_error( "ERROR: Unable to map image for writing: %s\n", IGetErrorString( *error ) );
@@ -346,6 +347,7 @@ cl_mem create_image( cl_context context, cl_command_queue queue, BufferOwningPtr
         return NULL;
     }
 
+    clFinish(queue);
     return img;
 }
 
@@ -635,6 +637,7 @@ int test_fill_image_generic( cl_context context, cl_command_queue queue, image_d
         log_error( "ERROR: Unable to unmap image after verify: %s\n", IGetErrorString( error ) );
         return -1;
     }
+    clFinish(queue);
 
     imgHost.reset(0x0);
     imgData.reset(0x0);
