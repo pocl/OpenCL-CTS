@@ -119,6 +119,8 @@ struct PropertiesArray : public InfoMutableCommandBufferTest
     virtual bool Skip() override
     {
         Version device_version = get_device_cl_version(device);
+        if (InfoMutableCommandBufferTest::Skip())
+            return true;
         if ((device_version >= Version(3, 0))
             || is_extension_available(device, "cl_khr_extended_versioning"))
         {
@@ -133,7 +135,7 @@ struct PropertiesArray : public InfoMutableCommandBufferTest
                 return true;
             }
         }
-        return InfoMutableCommandBufferTest::Skip();
+        return false;
     }
 
     cl_int Run() override
