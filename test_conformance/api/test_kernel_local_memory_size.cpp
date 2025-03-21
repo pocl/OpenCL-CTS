@@ -80,12 +80,21 @@ __kernel void local_param_local_memory_kernel(__local int* local_ptr,
 
 REGISTER_TEST(kernel_local_memory_size)
 {
-    int error;
-    clProgramWrapper program;
-    clKernelWrapper kernel;
-
+    int error = 0;
     cl_ulong kernel_local_usage = 0;
     size_t param_value_size_ret = 0;
+
+    constexpr size_t size = 10;
+    constexpr size_t memory = size * sizeof(cl_int);
+
+    const size_t global_work_size[] = { size };
+    const size_t local_work_size[] = { size };
+    int data[size];
+
+    {
+    clProgramWrapper program;
+    clKernelWrapper kernel;
+    clMemWrapper streams[2];
 
     // Check memory needed to execute empty kernel with __local variable
     if (create_single_kernel_helper(context, &program, &kernel, 1,
@@ -104,18 +113,10 @@ REGISTER_TEST(kernel_local_memory_size)
     test_assert_error(param_value_size_ret == sizeof(cl_ulong),
                       "param_value_size_ret failed");
 
-    constexpr size_t size = 10;
-    constexpr size_t memory = size * sizeof(cl_int);
-
-    const size_t global_work_size[] = { size };
-    const size_t local_work_size[] = { size };
-
-    int data[size];
     for (size_t i = 0; i < size; i++)
     {
         data[i] = 0;
     }
-    clMemWrapper streams[2];
 
     streams[0] =
         clCreateBuffer(context, CL_MEM_READ_WRITE, memory, NULL, &error);
@@ -152,9 +153,12 @@ REGISTER_TEST(kernel_local_memory_size)
     test_assert_error(kernel_local_usage >= memory,
                       "kernel local mem size failed");
 
+    }
 
-    program.reset();
-    kernel.reset();
+    {
+    clProgramWrapper program;
+    clKernelWrapper kernel;
+    clMemWrapper streams[2];
     // Check memory needed to execute empty kernel with __local parameter with
     // setKernelArg
     if (create_single_kernel_helper(context, &program, &kernel, 1,
@@ -226,9 +230,13 @@ REGISTER_TEST(kernel_local_memory_size)
     test_assert_error(kernel_local_usage >= memory,
                       "kernel local mem size failed");
 
+    }
 
-    program.reset();
-    kernel.reset();
+    {
+    clProgramWrapper program;
+    clKernelWrapper kernel;
+    clMemWrapper streams[2];
+
     // Check memory needed to execute kernel with __local variable and __local
     // parameter with setKernelArg
     if (create_single_kernel_helper(context, &program, &kernel, 1,
@@ -310,6 +318,8 @@ REGISTER_TEST(kernel_local_memory_size)
 
     test_assert_error(kernel_local_usage >= 2 * memory,
                       "kernel local mem size failed");
+
+    }
 
     return CL_SUCCESS;
 }
