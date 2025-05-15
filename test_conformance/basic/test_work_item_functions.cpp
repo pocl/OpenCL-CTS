@@ -476,7 +476,7 @@ struct TestWorkItemFnsOutOfRange
                                                maxWorkItemSizes[2] };
             // check if maximum work group size for current dimention is not
             // exceeded
-            cl_uint work_group_size = max_workgroup_size + 1;
+            size_t work_group_size = max_workgroup_size + 1;
             while (max_workgroup_size < work_group_size && work_group_size != 1)
             {
                 work_group_size = 1;
@@ -486,7 +486,7 @@ struct TestWorkItemFnsOutOfRange
                 {
                     for (size_t j = 0; j < dim; j++)
                         local_workgroup_size[j] =
-                            std::max(1, (int)local_workgroup_size[j] / 2);
+                            std::max((size_t)1, local_workgroup_size[j] / 2);
                 }
             };
 
