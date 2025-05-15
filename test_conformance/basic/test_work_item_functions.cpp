@@ -486,7 +486,7 @@ struct TestWorkItemFnsOutOfRange
                 {
                     for (size_t j = 0; j < dim; j++)
                         local_workgroup_size[j] =
-                            std::max(1, (int)local_workgroup_size[j] / 2);
+                            std::max((size_t)1, local_workgroup_size[j] / 2);
                 }
             };
 
