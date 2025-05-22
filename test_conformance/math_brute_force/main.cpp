@@ -183,8 +183,8 @@ static int doTest(const char *name)
         {
             if (get_device_cl_version(gDevice) > Version(1, 2))
             {
-                int TestCount = __atomic_add_fetch(&gTestCount, 1, __ATOMIC_ACQ_REL);
-                vlog("%3d: ", TestCount);
+                int TestCountOld = ThreadPool_AtomicAdd(&gTestCount, 1);
+                vlog("%3d: ", TestCountOld+1);
                 // Test with relaxed requirements here.
                 if (func_data->vtbl_ptr->TestFunc(func_data, gMTdata,
                                                   true /* relaxed mode */))
@@ -207,13 +207,13 @@ static int doTest(const char *name)
 
         if (gTestFloat)
         {
-            int TestCount = __atomic_add_fetch(&gTestCount, 1, __ATOMIC_ACQ_REL);
-            vlog("%3d: ", TestCount);
+            int TestCountOld = ThreadPool_AtomicAdd(&gTestCount, 1);
+            vlog("%3d: ", TestCountOld+1);
             // Don't test with relaxed requirements.
             if (func_data->vtbl_ptr->TestFunc(func_data, gMTdata,
                                               false /* relaxed mode */))
             {
-                __atomic_add_fetch(&gFailCount, 1, __ATOMIC_ACQ_REL);
+                ThreadPool_AtomicAdd(&gFailCount, 1);
                 error++;
                 if (gStopOnError)
                 {
@@ -226,13 +226,13 @@ static int doTest(const char *name)
         if (gHasDouble && NULL != func_data->vtbl_ptr->DoubleTestFunc
             && NULL != func_data->dfunc.p)
         {
-            int TestCount = __atomic_add_fetch(&gTestCount, 1, __ATOMIC_ACQ_REL);
-            vlog("%3d: ", TestCount);
+            int TestCountOld = ThreadPool_AtomicAdd(&gTestCount, 1);
+            vlog("%3d: ", TestCountOld+1);
             // Don't test with relaxed requirements.
             if (func_data->vtbl_ptr->DoubleTestFunc(func_data, gMTdata,
                                                     false /* relaxed mode*/))
             {
-                __atomic_add_fetch(&gFailCount, 1, __ATOMIC_ACQ_REL);
+                ThreadPool_AtomicAdd(&gFailCount, 1);
                 error++;
                 if (gStopOnError)
                 {
@@ -244,8 +244,8 @@ static int doTest(const char *name)
 
         if (gHasHalf && NULL != func_data->vtbl_ptr->HalfTestFunc)
         {
-            gTestCount++;
-            vlog("%3d: ", gTestCount);
+            int TestCountOld = ThreadPool_AtomicAdd(&gTestCount, 1);
+            vlog("%3d: ", TestCountOld+1);
             if (func_data->vtbl_ptr->HalfTestFunc(func_data, gMTdata,
                                                   false /* relaxed mode*/))
             {
