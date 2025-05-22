@@ -170,6 +170,7 @@ void version_expected_info(const char *test_name, const char *api_name,
              "reports %s version %s)\n",
              test_name, api_name, expected_version, api_name, device_version);
 }
+
 int runTestHarnessWithCheck(int argc, const char *argv[], int testNum,
                             test_definition testList[],
                             int forceNoContextCreation,
@@ -187,6 +188,7 @@ int runTestHarnessWithCheck(int argc, const char *argv[], int testNum,
     cl_device_id *devices = NULL;
     cl_uint choosen_device_index = 0;
     cl_uint choosen_platform_index = 0;
+    const char* chosen_platform_name = nullptr;
 
     int err, ret;
     char *endPtr;
@@ -246,6 +248,12 @@ int runTestHarnessWithCheck(int argc, const char *argv[], int testNum,
     if (env_mode != NULL)
     {
         choosen_platform_index = atoi(env_mode);
+    }
+
+    env_mode = getenv("CL_PLATFORM_NAME");
+    if (env_mode != NULL)
+    {
+        chosen_platform_name = env_mode;
     }
 
     /* Process the command line arguments */
@@ -397,10 +405,11 @@ int runTestHarnessWithCheck(int argc, const char *argv[], int testNum,
             break;
         default: log_error("Requesting unknown device "); return EXIT_FAILURE;
     }
+
     log_info(based_on_env_var ? "based on environment variable "
                               : "based on command line ");
-    log_info("for platform index %d and device index %d\n",
-             choosen_platform_index, choosen_device_index);
+    log_info("for platform index %d / name %s and device index %d\n",
+             choosen_platform_index, chosen_platform_name, choosen_device_index);
 
 #if defined(__APPLE__)
 #if defined(__i386__) || defined(__x86_64__)
@@ -461,6 +470,32 @@ int runTestHarnessWithCheck(int argc, const char *argv[], int testNum,
     {
         print_error(err, "clGetPlatformIDs failed");
         return EXIT_FAILURE;
+    }
+
+    if (chosen_platform_name) {
+        unsigned i = 0;
+        for (; i < num_platforms; ++i) {
+            char PlatformName[1024];
+            size_t ActualSize = 0;
+            err = clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME,
+                                    1024, PlatformName, &ActualSize);
+            if (err || ActualSize >= 1024)
+            {
+                print_error(err, "clGetPlatformInfo(CL_PLATFORM_NAME) failed");
+                return EXIT_FAILURE;
+            }
+            if (strstr(PlatformName, chosen_platform_name) != nullptr) {
+                choosen_platform_index = i;
+                log_info("Using platform index %d / name %s and device index %d\n",
+                         choosen_platform_index, PlatformName, choosen_device_index);
+                break;
+            }
+        }
+        if (i == num_platforms) {
+            log_error("could not find any platform by name '%s'\n",
+                      chosen_platform_name);
+            return EXIT_FAILURE;
+        }
     }
 
     /* Get the number of requested devices */
