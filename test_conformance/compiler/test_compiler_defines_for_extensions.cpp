@@ -81,6 +81,7 @@ const char *known_extensions[] = {
     "cl_khr_suggested_local_work_size",
     "cl_khr_expect_assume",
     "cl_khr_spirv_linkonce_odr",
+    "cl_khr_spirv_queries",
     "cl_khr_semaphore",
     "cl_khr_external_semaphore",
     "cl_khr_external_semaphore_win32",
