@@ -386,7 +386,15 @@ cl_int Test(cl_uint job_id, cl_uint thread_id, void *data)
     {
         // Calculate the correctly rounded reference result
         memset(&oldMode, 0, sizeof(oldMode));
-        if (ftz || relaxedMode) ForceFTZ(&oldMode);
+        if (ftz || relaxedMode) {
+#ifdef __riscv
+            log_error("Error: RISC-V does not support FTZ / RelaxedMode \n");
+            return -1;
+
+#else
+            ForceFTZ(&oldMode);
+#endif
+        }
 
         // Set the rounding mode to match the device
         if (gIsInRTZMode) oldRoundMode = set_round(kRoundTowardZero, kfloat);

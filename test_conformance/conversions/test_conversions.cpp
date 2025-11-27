@@ -389,6 +389,13 @@ test_status InitCL(cl_device_id device)
         floatCapabilities = 0;
     if (0 == (CL_FP_DENORM & floatCapabilities)) gForceFTZ ^= 1;
 
+#ifdef __riscv
+    if (gForceFTZ) {
+        log_error("RISC-V does not support FTZ on Host Side\n");
+        return CL_INVALID_VALUE;
+    }
+#endif
+
     if (0 == (floatCapabilities & CL_FP_ROUND_TO_NEAREST))
     {
         char profileStr[128] = "";

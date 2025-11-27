@@ -1223,6 +1223,12 @@ cl_int PrepareReference(cl_uint job_id, cl_uint thread_id, void *p)
         // Decide if we allow a zero result in addition to the correctly rounded
         // one
         memset(a, 0, count);
+#ifdef __riscv
+        if (gForceFTZ) {
+            log_error("RISC-V does not support FTZ on Host Side\n");
+            return CL_INVALID_VALUE;
+        }
+#endif
         if (gForceFTZ && (inType == kfloat || outType == kfloat))
         {
             info->set_allow_zero_array((uint8_t *)a, d, s, count);

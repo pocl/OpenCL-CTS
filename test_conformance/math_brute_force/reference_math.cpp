@@ -489,7 +489,15 @@ float reference_fma(float a, float b, float c, int shouldFlush)
         if (gIsInRTZMode) oldRoundMode = set_round(kRoundTowardZero, kfloat);
 
         memset(&oldMode, 0, sizeof(oldMode));
-        if (shouldFlush) ForceFTZ(&oldMode);
+        if (shouldFlush) {
+#ifdef __riscv
+            log_error("Error: RISC-V does not support FTZ / RelaxedMode \n");
+            return -1;
+
+#else
+            ForceFTZ(&oldMode);
+#endif
+        }
 
         a = (float)reference_multiply(
             a, b); // some risk that the compiler will insert a non-compliant

@@ -411,6 +411,12 @@ test_status InitCL( cl_device_id device )
     if(0 == (CL_FP_DENORM & floatCapabilities) )
         gForceFTZ ^= 1;
 
+#ifdef __riscv
+    if (gForceFTZ) {
+        log_error("RISC-V does not support FTZ on Host Side\n");
+        return TEST_FAIL;
+    }
+#endif
     // check for cl_khr_fp64
     gHasDouble = is_extension_available(device, "cl_khr_fp64" );
 
@@ -420,6 +426,7 @@ test_status InitCL( cl_device_id device )
     // Embedded devices that flush to zero are allowed to have an undefined sign.
     if (gIsEmbedded && gForceFTZ)
         gIgnoreZeroSign = 1;
+
 
     gContext = clCreateContext( NULL, 1, &device, notify_callback, NULL, &error );
     if( NULL == gContext || error )
@@ -609,8 +616,11 @@ test_status InitCL( cl_device_id device )
         }
 
         void *ftzInfo = NULL;
+#ifndef __riscv
         if( gForceFTZ )
             ftzInfo = FlushToZero();
+#endif
+
         if ((CL_FP_ROUND_TO_ZERO == get_default_rounding_mode(device)) && gIsEmbedded) {
             oldRoundMode = set_round(kRoundTowardZero, kfloat);
             isRTZ = 1;
@@ -646,8 +656,10 @@ test_status InitCL( cl_device_id device )
                                           (fabsf(q2) == FLT_MAX) || (q2 != q2)));
         }
 
+#ifndef __riscv
         if( gForceFTZ )
             UnFlushToZero(ftzInfo);
+#endif
 
     if (isRTZ)
       (void)set_round(oldRoundMode, kfloat);
@@ -738,9 +750,10 @@ test_status InitCL( cl_device_id device )
             // for doubles. We disable FTZ if this is default on
             // the platform (like ARM) for reference result computation
             // It is no-op if platform default is not FTZ (e.g. x86)
+#ifndef __riscv
             FPU_mode_type oldMode;
             DisableFTZ( &oldMode );
-
+#endif
             buf3_double = (double *)malloc( BUFFER_SIZE );
             buf4_double = (double *)malloc( BUFFER_SIZE );
             buf5_double = (double *)malloc( BUFFER_SIZE );
@@ -823,9 +836,11 @@ test_status InitCL( cl_device_id device )
 #endif
             }
 
+#ifndef __riscv
             // Restore previous FP state since we modified it for
             // reference result computation (see DisableFTZ call above)
             RestoreFPState(&oldMode);
+#endif
         }
         free(bufSkip);
     }

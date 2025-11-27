@@ -54,8 +54,10 @@ typedef enum
 
 extern RoundingMode set_round(RoundingMode r, Type outType);
 extern RoundingMode get_round(void);
+#ifndef __riscv
 extern void *FlushToZero(void);
 extern void UnFlushToZero(void *p);
+#endif
 
 
 #endif /* __ROUNDING_MODE_H__ */
