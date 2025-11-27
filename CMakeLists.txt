@@ -233,8 +233,8 @@ endif(APPLE)
 
 message(STATUS "CLConform_LIBRARIES: ${CLConform_LIBRARIES}")
 
-include_directories(SYSTEM ${CL_INCLUDE_DIR})
-include_directories(SYSTEM ${SPIRV_INCLUDE_DIR}/include)
+include_directories(${CL_INCLUDE_DIR})
+include_directories(${SPIRV_INCLUDE_DIR})
 include_directories(${CLConform_SOURCE_DIR}/test_common/harness
                     ${CLConform_SOURCE_DIR}/test_common/gles
                     ${CLConform_SOURCE_DIR}/test_common/gl

@@ -50,9 +50,9 @@ add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/spirv_capability_deps.def
     COMMENT "Generating spirv_capability_deps.def..."
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_spirv_capability_deps.py
-            --grammar "${SPIRV_INCLUDE_DIR}/include/spirv/unified1/spirv.core.grammar.json"
+            --grammar "${SPIRV_INCLUDE_DIR}/spirv.core.grammar.json"
             --output "${CMAKE_CURRENT_BINARY_DIR}/spirv_capability_deps.def"
-    DEPENDS generate_spirv_capability_deps.py "${SPIRV_INCLUDE_DIR}/include/spirv/unified1/spirv.core.grammar.json"
+    DEPENDS generate_spirv_capability_deps.py "${SPIRV_INCLUDE_DIR}/spirv.core.grammar.json"
     USES_TERMINAL
     VERBATIM)
 
