@@ -19,7 +19,7 @@
 #include <vector>
 
 #define SPV_ENABLE_UTILITY_CODE
-#include <spirv/unified1/spirv.hpp>
+#include <spirv.hpp>
 
 static bool is_spirv_version_supported(cl_device_id deviceID,
                                        const std::string& version)
