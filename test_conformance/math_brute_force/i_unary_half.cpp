@@ -56,8 +56,10 @@ int TestFunc_Int_Half(const Func *f, MTdata d, bool relaxedMode)
     logFunctionInfo(f->name, sizeof(cl_half), relaxedMode);
     // This test is not using ThreadPool so we need to disable FTZ here
     // for reference computations
+#ifndef __riscv
     FPU_mode_type oldMode;
     DisableFTZ(&oldMode);
+#endif
     std::shared_ptr<int> at_scope_exit(
         nullptr, [&oldMode](int *) { RestoreFPState(&oldMode); });
 

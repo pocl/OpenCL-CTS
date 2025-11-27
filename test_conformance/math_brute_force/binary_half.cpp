@@ -262,7 +262,14 @@ cl_int TestHalf(cl_uint job_id, cl_uint thread_id, void *data)
     {
         // Calculate the correctly rounded reference result
         memset(&oldMode, 0, sizeof(oldMode));
-        if (ftz) ForceFTZ(&oldMode);
+        if (ftz) {
+#ifdef __riscv
+          log_error("RISC-V does not support FTZ on Host Side\n");
+          return TEST_FAIL;
+#else
+          ForceFTZ(&oldMode);
+#endif
+        }
 
         // Set the rounding mode to match the device
         if (gIsInRTZMode)
@@ -292,7 +299,9 @@ cl_int TestHalf(cl_uint job_id, cl_uint thread_id, void *data)
             r[j] = cl_half_from_float(ref_func(s[j], s2[j]), halfRoundingMode);
     }
 
+#ifndef __riscv
     if (isFDim && ftz) RestoreFPState(&oldMode);
+#endif
     // Read the data back -- no need to wait for the first N-1 buffers. This is
     // an in order queue.
     for (j = gMinVectorSizeIndex; j < gMaxVectorSizeIndex; j++)

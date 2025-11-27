@@ -49,6 +49,8 @@ extern __thread fpu_control_t fpu_control;
 #include "mips/m32c1.h"
 #endif
 
+#ifndef __riscv
+
 // Set the reference hardware floating point unit to FTZ mode
 inline void ForceFTZ(FPU_mode_type *oldMode)
 {
@@ -77,6 +79,8 @@ inline void ForceFTZ(FPU_mode_type *oldMode)
     _WriteStatusReg(ARM64_FPCR, fpscr | (1U << 24));
 #elif defined(__mips__)
     fpa_bissr(FPA_CSR_FS);
+#elif defined(__riscv)
+    return;
 #else
 #error ForceFTZ needs an implentation
 #endif
@@ -110,6 +114,8 @@ inline void DisableFTZ(FPU_mode_type *oldMode)
     _WriteStatusReg(ARM64_FPCR, fpscr & ~(1U << 24));
 #elif defined(__mips__)
     fpa_bicsr(FPA_CSR_FS);
+#elif defined(__riscv)
+    return;
 #else
 #error DisableFTZ needs an implentation
 #endif
@@ -132,6 +138,8 @@ inline void RestoreFPState(FPU_mode_type *mode)
     _WriteStatusReg(ARM64_FPCR, *mode);
 #elif defined(__mips__)
     // Mips runs by default with DAZ=1 FTZ=1
+#elif defined(__riscv)
+    return;
 #else
 #error RestoreFPState needs an implementation
 #endif
@@ -140,4 +148,6 @@ inline void RestoreFPState(FPU_mode_type *mode)
 #error ForceFTZ and RestoreFPState need implentations
 #endif
 
-#endif
+#endif // __riscv
+
+#endif // _fpcontrol_h

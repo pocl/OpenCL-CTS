@@ -164,7 +164,14 @@ int TestFunc_Half2_Half(const Func *f, MTdata d, bool relaxedMode)
         {
             // Calculate the correctly rounded reference result
             memset(&oldMode, 0, sizeof(oldMode));
-            if (ftz) ForceFTZ(&oldMode);
+            if (ftz) {
+#ifdef __riscv
+                log_error("RISC-V does not support FTZ on Host Side\n");
+                return TEST_FAIL;
+#else
+                ForceFTZ(&oldMode);
+#endif
+            }
 
             // Set the rounding mode to match the device
             if (gIsInRTZMode)

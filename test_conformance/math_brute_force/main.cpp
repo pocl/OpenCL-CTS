@@ -404,8 +404,10 @@ int main(int argc, const char *argv[])
 
     gMTdata = MTdataHolder(gRandomSeed);
 
+#ifndef __riscv
     FPU_mode_type oldMode;
     DisableFTZ(&oldMode);
+#endif
 
     int ret = runTestHarnessWithCheck(
         gTestNames.size(), gTestNames.data(),

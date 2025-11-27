@@ -261,7 +261,14 @@ cl_int TestHalf(cl_uint job_id, cl_uint thread_id, void *data)
     // Calculate the correctly rounded reference result
     FPU_mode_type oldMode;
     memset(&oldMode, 0, sizeof(oldMode));
-    if (ftz) ForceFTZ(&oldMode);
+    if (ftz) {
+#ifdef __riscv
+        log_error("RISC-V does not support FTZ on Host Side\n");
+        return TEST_FAIL;
+#else
+        ForceFTZ(&oldMode);
+#endif
+    }
 
     // Set the rounding mode to match the device
     oldRoundMode = kRoundToNearestEven;

@@ -471,8 +471,10 @@ int main(int argc, const char *argv[])
     // where reference is being computed to make sure we get non-flushed reference result. If implementation
     // returns flushed result, we correctly take care of that in verification code.
 
+#ifndef __riscv
     FPU_mode_type oldMode;
     DisableFTZ(&oldMode);
+#endif
 
     int ret = runTestHarnessWithCheck(
         argCount, argList, test_registry::getInstance().num_tests(),
