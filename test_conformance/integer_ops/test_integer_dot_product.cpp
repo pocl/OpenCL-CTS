@@ -47,6 +47,10 @@ calculate_reference(std::vector<DstType>& ref, const std::vector<SrcTypeA>& a,
         {
             result = std::numeric_limits<DstType>::max();
         }
+        if (AccSat && result < std::numeric_limits<DstType>::min())
+        {
+            result = std::numeric_limits<DstType>::min();
+        }
         ref[r] = static_cast<DstType>(result);
     }
 }
@@ -249,10 +253,14 @@ static int test_case_dot(cl_device_id deviceID, cl_context context,
                                 results.data(), 0, NULL, NULL);
     test_error(error, "Unable to read data after test kernel");
 
-    if (results != reference)
-    {
-        log_error("Result buffer did not match reference buffer!\n");
+    for (int i = 0; i < num_elements; ++i) {
+      if (results[i] != reference[i])
+      {
+        log_error("Result buffer did not match reference buffer at %i: RES %x %i | REF %x %i | ACC %x %i | A %i %i %i %i | B %i %i %i %i \n",
+                  i, results[i], results[i], reference[i], reference[i], acc[i], acc[i],
+                  a[N*i], a[N*i+1],a[N*i+2],a[N*i+3], b[N*i],b[N*i+1],b[N*i+2],b[N*i+3]  );
         return TEST_FAIL;
+      }
     }
 
     return TEST_PASS;
