@@ -41,7 +41,7 @@ REGISTER_TEST(subgroup_functions_shuffle_relative)
         return TEST_SKIPPED_ITSELF;
     }
 
-    constexpr size_t global_work_size = 2000;
+    constexpr size_t global_work_size = 200000;
     constexpr size_t local_work_size = 200;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.save_kernel_source(sub_group_generic_source);

@@ -159,7 +159,7 @@ int test_barrier_functions(cl_device_id device, cl_context context,
     int error = TEST_PASS;
 
     // Adjust these individually below if desired/needed
-    constexpr size_t global_work_size = 2000;
+    constexpr size_t global_work_size = 200000;
     constexpr size_t local_work_size = 200;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.use_core_subgroups = useCoreSubgroups;
