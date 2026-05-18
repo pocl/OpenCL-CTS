@@ -524,7 +524,7 @@ template <typename Ty, ShuffleOp operation> struct SHF
                             break;
                         // rotate - treat l as delta
                         case ShuffleOp::rotate:
-                            tr_idx = (i + l) % test_params.subgroup_size;
+                            tr_idx = ((int)i + (int)l) % (int)test_params.subgroup_size;
                             break;
                         case ShuffleOp::clustered_rotate: {
                             tr_idx = ((i & ~(test_params.cluster_size - 1))
