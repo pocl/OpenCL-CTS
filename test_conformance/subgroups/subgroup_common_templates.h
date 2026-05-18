@@ -415,9 +415,9 @@ template <typename Ty, ShuffleOp operation> struct SHF
     {
         int i, ii, j, k, n;
         cl_uint l;
-        int nw = test_params.local_workgroup_size;
-        int ns = test_params.subgroup_size;
-        int ng = test_params.global_workgroup_size;
+        int nw = (int)test_params.local_workgroup_size;
+        int ns = (int)test_params.subgroup_size;
+        int ng = (int)test_params.global_workgroup_size;
         int nj = (nw + ns - 1) / ns;
         ii = 0;
         ng = ng / nw;
@@ -476,35 +476,34 @@ template <typename Ty, ShuffleOp operation> struct SHF
                            const WorkGroupParams &test_params)
     {
         int ii, k;
-        size_t n;
-        cl_uint l;
-        size_t nw = test_params.local_workgroup_size;
-        size_t ns = test_params.subgroup_size;
-        int ng = test_params.global_workgroup_size;
-        size_t nj = (nw + ns - 1) / ns;
+        int n, l;
+        int nw = (int)test_params.local_workgroup_size;
+        int ns = (int)test_params.subgroup_size;
+        int ng = (int)test_params.global_workgroup_size;
+        int nj = (nw + ns - 1) / ns;
         Ty tr, rr;
         ng = ng / nw;
 
         for (k = 0; k < ng; ++k)
         { // for each work_group
-            for (size_t j = 0; j < nw; ++j)
+            for (int j = 0; j < nw; ++j)
             { // inside the work_group
                 mx[j] = x[j]; // read host inputs for work_group
                 my[j] = y[j]; // read device outputs for work_group
             }
 
-            for (size_t j = 0; j < nj; ++j)
+            for (int j = 0; j < nj; ++j)
             { // for each subgroup
                 ii = j * ns;
                 n = ii + ns > nw ? nw - ii : ns;
 
-                for (size_t i = 0; i < n; ++i)
+                for (int i = 0; i < n; ++i)
                 { // inside the subgroup
                   // shuffle index storage
                     int midx = 4 * ii + 4 * i + 2;
                     l = m[midx];
                     rr = my[ii + i];
-                    cl_uint tr_idx;
+                    int tr_idx;
                     bool skip = false;
                     switch (operation)
                     {
@@ -524,7 +523,8 @@ template <typename Ty, ShuffleOp operation> struct SHF
                             break;
                         // rotate - treat l as delta
                         case ShuffleOp::rotate:
-                            tr_idx = (i + l) % test_params.subgroup_size;
+                            //tr_idx = (i + l) % test_params.subgroup_size;
+                            tr_idx = (i + l) % ns;
                             break;
                         case ShuffleOp::clustered_rotate: {
                             tr_idx = ((i & ~(test_params.cluster_size - 1))
@@ -541,8 +541,8 @@ template <typename Ty, ShuffleOp operation> struct SHF
                         if (!compare(rr, tr))
                         {
                             log_error("ERROR: sub_group_%s(%s) mismatch for "
-                                      "local id %zu in sub group %zu in group "
-                                      "%d\n",
+                                      "local id %i in sub group %i in group "
+                                      "%i\n",
                                       operation_names(operation),
                                       TypeManager<Ty>::name(), i, j, k);
                             return TEST_FAIL;
