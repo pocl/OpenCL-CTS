@@ -67,7 +67,7 @@ int gHasLong = 1;
 bool gCoreILProgram = true;
 int gInvalidObject = InvalidObject::Nullptr;
 
-#define DEFAULT_NUM_ELEMENTS 0x4000
+#define DEFAULT_NUM_ELEMENTS 0x100000
 
 test_definition *test_registry::definitions() { return &m_definitions[0]; }
 
