@@ -165,8 +165,8 @@ int test_subgroup_functions(cl_device_id device, cl_context context,
                             cl_command_queue queue, int num_elements,
                             bool useCoreSubgroups)
 {
-    constexpr size_t global_work_size = 2000;
-    constexpr size_t local_work_size = 200;
+    constexpr size_t global_work_size = 128000;
+    constexpr size_t local_work_size = 128;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.use_core_subgroups = useCoreSubgroups;
     test_params.save_kernel_source(sub_group_reduction_scan_source);

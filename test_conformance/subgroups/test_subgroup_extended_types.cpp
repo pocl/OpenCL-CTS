@@ -62,8 +62,8 @@ REGISTER_TEST(subgroup_functions_extended_types)
         return TEST_SKIPPED_ITSELF;
     }
 
-    constexpr size_t global_work_size = 2000;
-    constexpr size_t local_work_size = 200;
+    constexpr size_t global_work_size = 128000;
+    constexpr size_t local_work_size = 128;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.save_kernel_source(sub_group_reduction_scan_source);
     test_params.save_kernel_source(sub_group_generic_source,

@@ -130,8 +130,8 @@ REGISTER_TEST(subgroup_functions_non_uniform_arithmetic)
         return TEST_SKIPPED_ITSELF;
     }
 
-    constexpr size_t global_work_size = 2000;
-    constexpr size_t local_work_size = 200;
+    constexpr size_t global_work_size = 128000;
+    constexpr size_t local_work_size = 128;
     WorkGroupParams test_params(global_work_size, local_work_size, 3);
     test_params.save_kernel_source(sub_group_non_uniform_arithmetic_source);
     RunTestForType rft(device, context, queue, num_elements, test_params);

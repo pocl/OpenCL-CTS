@@ -291,8 +291,8 @@ int test_ifp(cl_device_id device, cl_context context, cl_command_queue queue,
 
     // Global/local work group sizes
     // Adjust these individually below if desired/needed
-    constexpr size_t global_work_size = 2000;
-    constexpr size_t local_work_size = 200;
+    constexpr size_t global_work_size = 1280;
+    constexpr size_t local_work_size = 128;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.use_core_subgroups = useCoreSubgroups;
     test_params.dynsc = NUM_LOC + 1;

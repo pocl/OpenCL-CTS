@@ -159,8 +159,8 @@ int test_barrier_functions(cl_device_id device, cl_context context,
     int error = TEST_PASS;
 
     // Adjust these individually below if desired/needed
-    constexpr size_t global_work_size = 2000;
-    constexpr size_t local_work_size = 200;
+    constexpr size_t global_work_size = 128000;
+    constexpr size_t local_work_size = 128;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.use_core_subgroups = useCoreSubgroups;
     error = subgroup_test<cl_int, BAR<0>>::run(device, context, queue,

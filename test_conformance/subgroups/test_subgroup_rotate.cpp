@@ -44,6 +44,9 @@ std::string sub_group_clustered_rotate_source = R"(
             case 32: r = %s(x, delta, 32); break;
             case 64: r = %s(x, delta, 64); break;
             case 128: r = %s(x, delta, 128); break;
+            case 256: r = %s(x, delta, 256); break;
+            case 512: r = %s(x, delta, 512); break;
+            case 1024: r = %s(x, delta, 1024); break;
         }
         out[gid] = r;
     }
@@ -67,8 +70,8 @@ REGISTER_TEST(subgroup_functions_rotate)
         return TEST_SKIPPED_ITSELF;
     }
 
-    constexpr size_t global_work_size = 2000;
-    constexpr size_t local_work_size = 200;
+    constexpr size_t global_work_size = 128000;
+    constexpr size_t local_work_size = 128;
     WorkGroupParams test_params(global_work_size, local_work_size);
     test_params.save_kernel_source(sub_group_generic_source);
     RunTestForType rft(device, context, queue, num_elements, test_params);

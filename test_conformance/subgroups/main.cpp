@@ -27,6 +27,8 @@ static test_status InitCL(cl_device_id device)
 {
     auto version = get_device_cl_version(device);
     test_status ret = TEST_PASS;
+    gMTdata = init_genrand(gRandomSeed);
+
     if (version >= Version(3, 0))
     {
         cl_uint max_sub_groups;
@@ -66,7 +68,6 @@ static test_status InitCL(cl_device_id device)
 
 int main(int argc, const char *argv[])
 {
-    gMTdata = init_genrand(0);
     return runTestHarnessWithCheck(
         argc, argv, test_registry::getInstance().num_tests(),
         test_registry::getInstance().definitions(), false, 0, InitCL);

@@ -187,7 +187,7 @@ int test_work_item_functions(cl_device_id device, cl_context context,
                              cl_command_queue queue, int num_elements,
                              bool useCoreSubgroups)
 {
-    static const size_t lsize = 200;
+    static const size_t lsize = 128;
     int error;
     int i, j, k, q, r, nw;
     size_t maxwgs;
