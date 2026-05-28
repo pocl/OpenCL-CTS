@@ -283,7 +283,9 @@ struct CommandBufferPrintfTest : public BasicCommandBufferTest
                 std::max(min_pattern_length, rand() % max_pattern_length);
 
             std::vector<cl_char> pattern(pattern_length + 1, pattern_character);
-            pattern.back() = '\0';
+            // workaround for GCC warning
+            if (pattern.size() > 0)
+              pattern.back() = '\0';
             enqueue_passes[i] = {
                 pattern,
                 { cl_int(i * offset), cl_int(pattern_length) },
